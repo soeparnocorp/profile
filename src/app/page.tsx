@@ -1,86 +1,116 @@
-// src/app/join/page.tsx
-"use client"; // Client component untuk interactivity
+// src/app/page.tsx
+"use client";
 
 import { useState } from 'react';
 
-export default function JoinPage() {
-  const [email, setEmail] = useState('');
+export default function CreateProfile() {
+  const [username, setUsername] = useState('');
   const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [bio, setBio] = useState('');
+  const [links, setLinks] = useState([{ label: '', url: '' }]);
+  const [status, setStatus] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const addLink = () => setLinks([...links, { label: '', url: '' }]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    const cleanUsername = username.trim().toLowerCase().replace(/^@/, '');
+
+    if (!cleanUsername || !name) {
+      setStatus('Username dan nama wajib diisi!');
+      return;
+    }
 
     try {
-      const res = await fetch('/api/join', {
+      const res = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({
+          username: cleanUsername,
+          name,
+          bio,
+          links,
+        }),
       });
 
       if (res.ok) {
-        setSuccess(true);
-        setMessage('Terima kasih! Kamu udah join inner circle READTalk.');
+        setStatus(`Sukses! Profile @${cleanUsername} dibuat. Buka: https://readtalk.pages.dev/@${cleanUsername}`);
       } else {
-        setMessage('Gagal submit, coba lagi ya.');
+        setStatus('Gagal menyimpan profile.');
       }
-    } catch (err) {
-      setMessage('Error koneksi, cek internet loe.');
-    } finally {
-      setLoading(false);
+    } catch {
+      setStatus('Error koneksi.');
     }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-black to-gray-950 text-white flex items-center justify-center px-6">
-      <div className="max-w-lg w-full text-center">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6">Join Inner Circle</h1>
-        <p className="text-xl mb-10 opacity-90">
-          Dapatkan update eksklusif, early access, dan newsletter dari @SoeparnoCorp – Soeparno Enterprise.
-        </p>
+    <main className="min-h-screen bg-gradient-to-br from-black to-gray-950 text-white flex items-center justify-center px-6 py-12">
+      <div className="max-w-lg w-full">
+        <h1 className="text-5xl font-bold mb-8 text-center">Buat Profile Linktree</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="@username (tanpa spasi)"
+            required
+            className="w-full p-5 bg-gray-800 border border-gray-700 rounded-xl focus:border-indigo-500"
+          />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nama tampilan"
+            required
+            className="w-full p-5 bg-gray-800 border border-gray-700 rounded-xl"
+          />
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Bio singkat (opsional)"
+            className="w-full p-5 bg-gray-800 border border-gray-700 rounded-xl h-32"
+          />
 
-        {success ? (
-          <div className="bg-green-900/50 p-8 rounded-xl">
-            <h2 className="text-2xl font-semibold mb-4">Sukses!</h2>
-            <p>{message}</p>
-            <a href="/" className="mt-6 inline-block text-indigo-400 hover:underline">
-              Kembali ke home
-            </a>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <input
-              type="text"
-              placeholder="Nama loe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full p-5 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-indigo-500"
-            />
-            <input
-              type="email"
-              placeholder="Email loe"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full p-5 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-indigo-500"
-            />
+          {/* Links dinamis */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold">Links Sosmed / Website</h3>
+            {links.map((link, index) => (
+              <div key={index} className="flex gap-4">
+                <input
+                  value={link.label}
+                  onChange={(e) => {
+                    const newLinks = [...links];
+                    newLinks[index].label = e.target.value;
+                    setLinks(newLinks);
+                  }}
+                  placeholder="Label (misal: X / Twitter)"
+                  className="flex-1 p-4 bg-gray-800 border border-gray-700 rounded-xl"
+                />
+                <input
+                  value={link.url}
+                  onChange={(e) => {
+                    const newLinks = [...links];
+                    newLinks[index].url = e.target.value;
+                    setLinks(newLinks);
+                  }}
+                  placeholder="URL"
+                  className="flex-1 p-4 bg-gray-800 border border-gray-700 rounded-xl"
+                />
+              </div>
+            ))}
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 py-5 rounded-xl text-xl font-bold transition disabled:opacity-50"
+              type="button"
+              onClick={addLink}
+              className="text-indigo-400 hover:text-indigo-300"
             >
-              {loading ? 'Mengirim...' : 'Kirim & Join'}
+              + Tambah link lain
             </button>
-          </form>
-        )}
+          </div>
 
-        <p className="mt-8 text-sm opacity-70">
-          Privasi aman. No spam, only value dari READTalk Messenger.
-        </p>
+          <button type="submit" className="w-full bg-indigo-600 py-5 rounded-xl font-bold hover:bg-indigo-700">
+            Buat Profile
+          </button>
+        </form>
+
+        {status && <p className="mt-8 text-center text-lg">{status}</p>}
       </div>
     </main>
   );
