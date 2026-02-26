@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "profile",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-02-26",  // Di-update ke tanggal hari ini biar dapet fitur terbaru runtime Workers
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+
+  // Bindings: definisikan di sini biar config file jadi source of truth (override dashboard kalau konflik)
+  // Gunakan database_id, id, bucket_name sesuai yang terlihat di dashboard (loe perlu copy ID-nya dari dashboard D1/KV/R2)
+  "d1_databases": [
+    {
+      "binding": "PROFILE_DB",
+      "database_name": "readtalk_db",
+      "database_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  // ← GANTI dengan real DATABASE_ID dari dashboard D1 > readtalk_db > Overview
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "PROFILE_KV",
+      "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  // ← GANTI dengan real ID dari dashboard KV > readtalk_kv > Overview
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PROFILE_STORAGE",
+      "bucket_name": "readtalk-r2"  // ← Ini sudah match nama bucket loe
+    }
+  ]
+}
