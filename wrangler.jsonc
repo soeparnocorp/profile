@@ -22,13 +22,13 @@
     {
       "binding": "PROFILE_DB",
       "database_name": "readtalk_db",
-      "database_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  // ← GANTI dengan real DATABASE_ID dari dashboard D1 > readtalk_db > Overview
+      "database_id": "ff653b9c-4e2c-479d-8aa4-497da62de3c5"  // ← GANTI dengan real DATABASE_ID dari dashboard D1 > readtalk_db > Overview
     }
   ],
   "kv_namespaces": [
     {
       "binding": "PROFILE_KV",
-      "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  // ← GANTI dengan real ID dari dashboard KV > readtalk_kv > Overview
+      "id": "13a468e30cc84fe58ff6297d799050f2"  // ← GANTI dengan real ID dari dashboard KV > readtalk_kv > Overview
     }
   ],
   "r2_buckets": [
